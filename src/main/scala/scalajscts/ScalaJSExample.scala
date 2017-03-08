@@ -55,10 +55,20 @@ object CtsExample extends {
 		).render
 
 		val citedWorks = Var("")
+		val citedWorksHTML = Rx{
+				citedWorks().split("\n").map( cw =>
+					ul(
+						li(
+							cw
+						)
+					)
+				)
+		}
+
 
 		val citedWorksDisplay = div(
 				`id`:= "citedWorks",
-				 citedWorks
+				 citedWorksHTML
 		).render
 
 		filePicker.onchange = (e: dom.Event) => {
