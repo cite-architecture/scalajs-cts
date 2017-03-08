@@ -47,23 +47,6 @@ object CtsExample extends {
 			last
 		}
 
-		val txt = Var("")
-		val numChars = Rx{txt().length}
-		val numWords = Rx{
-			txt().split(' ')
-			.filter(_.length > 0)
-			.length
-		}
-
-		val avgWordLength = Rx{
-			txt().count(_ != ' ') * 1.0 / numWords()
-		}
-
-		val txtInput = textarea.render
-		txtInput.onkeyup = (e: dom.Event) => {
-			txt() = txtInput.value
-		}
-
 
 		var wholeCorpus: CtsCorpus  = null
 
@@ -97,20 +80,6 @@ object CtsExample extends {
 		textSpace.appendChild(
 			citedWorksDisplay
 		).render
-
-
-		textSpace.appendChild(
-			div(
-				txtInput,
-				ul(
-					li("Chars: ", numChars),
-					li("Words: ", numWords),
-					li("Word Length: ", avgWordLength)
-				)
-			).render
-		)
-
-
 
 	}
 }
