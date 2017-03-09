@@ -19,6 +19,11 @@ case class CtsCorpus(twocol: String){
 	 passageString
  }
 
+ def getFirstCitation(urn:CtsUrn): String = {
+   val furn: CtsUrn = corpus.firstNode(urn).urn
+	 furn.toString
+ }
+
 	def testMethod(urnString: String): String = {
 		val urn = CtsUrn(urnString)
 		urn.dropPassage.toString

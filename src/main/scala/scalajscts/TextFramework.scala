@@ -35,6 +35,7 @@ object CtsExample extends {
 			document.getElementById("messages").innerHTML = msg
 		}
 
+
 		// Binding magic. Never touch this!
 		implicit def rxFrag[T <% Frag](r: Rx[T]): Frag = {
 			def rSafe: dom.Node = span(r()).render
@@ -56,20 +57,38 @@ object CtsExample extends {
 		var typedUrn: CtsUrn = null
 		var currentUrn: CtsUrn = null
 
+
+		def createCitedWorksListItem(us: String) = {
+		  val l = li( us ).render
+			l.onclick = (_: dom.Event) => {
+				try{
+					val workUrn = CtsUrn(us)
+					val firstUrnString = wholeCorpus.getFirstCitation(workUrn)
+					document.getElementById("urnTextInput").value = firstUrnString
+				} catch {
+					case e: Exception => document.getElementById("urnTextInput").value = "No first urn found."
+				}
+			}
+			l
+		}
+
+
 		// Bound Stuff
 		val citedWorks = Var("")
 		val citedWorksHTML = Rx{
 
 					citedWorks().split("\n").map( cw =>
 						ul(
-							li(
-								onclick:="getElementById('urnTextInput').value = this.textContent;",
-								cw
-							)
+							createCitedWorksListItem(cw)
+							//li(
+								//onclick:="getElementById('urnTextInput').value = this.textContent;",
+								//cw
+							//)
 						)
 					)
 
 		}
+
 
 
 		val currentPassage = Var("")
@@ -89,12 +108,17 @@ object CtsExample extends {
 			`class`:="invalidUrn"
 		).render
 
+		val urnTextInputSubmitButton = input(
+			`id`:= "getTextButton",
+		  `type`:= "submit"
+		).render
+
 
 		//val urnSubmit = input(
 		//		`type`:="submit"
 		//)
 
-		urnTextInput.onchange = (e: dom.Event) => {
+		def fetchText: Unit = {
 			try {
 				typedUrn = CtsUrn(urnTextInput.value)
 				println(typedUrn.passageComponentOption)
@@ -107,6 +131,14 @@ object CtsExample extends {
 			} catch {
 				case e: Exception => document.getElementById("validUrnFlag").className = "invalidUrn"
 			}
+		}
+
+		urnTextInput.onchange = (e: dom.Event) => {
+			fetchText
+		}
+
+		urnTextInputSubmitButton.onclick = (_: dom.Event) => {
+			fetchText
 		}
 
 		urnTextInput.onkeyup = (e: dom.Event) => {
@@ -122,6 +154,7 @@ object CtsExample extends {
 			div(
 				"URN: ",
 				urnTextInput,
+				urnTextInputSubmitButton,
 				span(
 						`id`:= "validUrnFlag"
 				)
@@ -177,7 +210,6 @@ object CtsExample extends {
 		).render
 
 		// On initialization, go ahead and load via AJAX the default library
-		println(defaultLibraryUrl)
 
 		displayMessage("Loading remote library…",false)
 		Ajax.get(defaultLibraryUrl).onSuccess { case xhr =>
