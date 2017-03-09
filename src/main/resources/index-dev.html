@@ -10,13 +10,14 @@
 
 <h1>CTS Reader</h1>
 <!-- <input type="file" id="filePicker"/> -->
+<div id="messages"></div>
 <div id="textSpace"></div>
-<div id="reactiveTextSpace"></div>
+
 
 <script type="text/javascript" src="../scalajscts-fastopt.js"></script>
-<script type="text/javascript" src="/workbench.js"></script>
 <script>
-		scalajscts.CtsExample().main(document.getElementById('textSpace'));
+		var defaultLibraryUrl = "https://raw.githubusercontent.com/Eumaeus/cts-demo-corpus/master/Demo2ColumnTexts/hmt-data.tsv"
+		scalajscts.CtsExample().main(document.getElementById('textSpace'), defaultLibraryUrl);
 </script>
 </body>
 </html>

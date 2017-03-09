@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Example Scala.js application</title>
+  <title>CTS Reader</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<link rel="stylesheet" type="text/css" href="application.css">
 </head>
-<body style="margin: 0px">
+<body>
 
-<div>
-    <canvas style="display: block" id="canvas" width="255" height="255"/>
-</div>
+<h1>CTS Reader</h1>
+<!-- <input type="file" id="filePicker"/> -->
+<div id="messages"></div>
+<div id="textSpace"></div>
 
 <script type="text/javascript" src="../scalajscts-opt.js"></script>
 <script>
-    scalajscts.ScalaJSExample().main(document.getElementById('canvas'));
+		var defaultLibraryUrl = "https://raw.githubusercontent.com/Eumaeus/cts-demo-corpus/master/Demo2ColumnTexts/hmt-data.tsv"
+		scalajscts.CtsExample().main(document.getElementById('textSpace'), defaultLibraryUrl);
 </script>
 </body>
 </html>
