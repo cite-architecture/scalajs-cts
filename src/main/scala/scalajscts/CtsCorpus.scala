@@ -13,8 +13,10 @@ case class CtsCorpus(twocol: String){
  }
 
  def getCtsText(urn:CtsUrn): String = {
-	 val ctsText:String = corpus.textContents(urn,"\n")
-	 ctsText
+	 //val ctsText:String = corpus.textContents(urn,"\n")
+	 val tempCorpus: Corpus = corpus ~~ urn
+	 val passageString: String = tempCorpus.contents.mkString("\n")
+	 passageString
  }
 
 	def testMethod(urnString: String): String = {

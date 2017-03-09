@@ -63,12 +63,14 @@ object CtsExample extends {
 					citedWorks().split("\n").map( cw =>
 						ul(
 							li(
+								onclick:="getElementById('urnTextInput').value = this.textContent;",
 								cw
 							)
 						)
 					)
 
 		}
+
 
 		val currentPassage = Var("")
 		val currentPassageHTML = Rx{
@@ -81,8 +83,9 @@ object CtsExample extends {
 		}
 
 		val urnTextInput = input(
+			`id`:="urnTextInput",
 			`type`:="text",
-			`size`:="30",
+			`size`:="50",
 			`class`:="invalidUrn"
 		).render
 
@@ -94,10 +97,10 @@ object CtsExample extends {
 		urnTextInput.onchange = (e: dom.Event) => {
 			try {
 				typedUrn = CtsUrn(urnTextInput.value)
+				println(typedUrn.passageComponentOption)
 				document.getElementById("validUrnFlag").className = "validUrn"
 				if (typedUrn.passageComponentOption != None){
 					currentPassage() = wholeCorpus.getCtsText(typedUrn)
-					clearMessage
 				} else {
 					currentPassage() ="No passage component in URN"
 				}
