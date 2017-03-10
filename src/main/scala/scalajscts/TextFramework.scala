@@ -61,19 +61,6 @@ object CtsExample extends {
 		var currentNext: Option[CtsUrn] = None
 		var currentPrev: Option[CtsUrn] = None
 
-		def createCitedWorksListItem(us: String) = {
-		  val l = li( us ).render
-			l.onclick = (_: dom.Event) => {
-				try{
-					val workUrn = CtsUrn(us)
-					val firstUrnString = wholeCorpus.getFirstCitation(workUrn)
-					document.getElementById("urnTextInput").value = firstUrnString
-				} catch {
-					case e: Exception => document.getElementById("urnTextInput").value = "No first urn found."
-				}
-			}
-			l
-		}
 
 		// Bound Stuff
 
@@ -86,16 +73,6 @@ object CtsExample extends {
 			tempString
 		}
 
-		val citedWorks = Var("")
-		val citedWorksHTML = Rx{
-
-					citedWorks().split("\n").map( cw =>
-						ul(
-							createCitedWorksListItem(cw)
-						)
-					)
-		}
-
 		val currentPassage = Var("")
 		val currentPassageHTML = Rx{
 				currentPassage().split("\n").map( cp =>
@@ -104,6 +81,32 @@ object CtsExample extends {
 					)
 				)
 		}
+
+		def createCitedWorksListItem(us: String) = {
+		  val l = li( us ).render
+			l.onclick = (_: dom.Event) => {
+				try{
+					val workUrn = CtsUrn(us)
+					val firstUrnString = wholeCorpus.getFirstCitation(workUrn)
+					document.getElementById("urnTextInput").value = firstUrnString
+					currentPassage() = ""
+				} catch {
+					case e: Exception => document.getElementById("urnTextInput").value = "No first urn found."
+				}
+			}
+			l
+		}
+
+		val citedWorks = Var("")
+		val citedWorksHTML = Rx{
+
+				ul(
+					citedWorks().split("\n").map( cw =>
+							createCitedWorksListItem(cw)
+						)
+				)
+		}
+
 
 
 		val urnTextInput = input(
