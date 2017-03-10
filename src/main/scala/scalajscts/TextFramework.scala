@@ -22,8 +22,6 @@ object CtsExample extends {
 	@JSExport
 	def main(textSpace: html.Div, defaultLibraryUrl: String) = {
 
-		// Testing shared values
-		// g.console.log("Test")
 
 		// Basic messaging
 		val document = js.Dynamic.global.document
@@ -60,8 +58,8 @@ object CtsExample extends {
 		var urnString: String = ""
 		var typedUrn: CtsUrn = null
 		var currentUrn: CtsUrn = null
-		var currentNext: CtsUrn = null
-		var currentPrev: CtsUrn = null
+		var currentNext: Option[CtsUrn] = None
+		var currentPrev: Option[CtsUrn] = None
 
 		def createCitedWorksListItem(us: String) = {
 		  val l = li( us ).render
@@ -80,6 +78,13 @@ object CtsExample extends {
 		// Bound Stuff
 
 		val currentUrnBound = Var(currentUrn)
+		val currentPrevBound = Var(currentPrev)
+		val currentNextBound = Var(currentNext)
+
+		val currentMoreBound = Rx{
+			val tempString = "test"
+			tempString
+		}
 
 		val citedWorks = Var("")
 		val citedWorksHTML = Rx{
@@ -114,37 +119,52 @@ object CtsExample extends {
 		).render
 
 		def fetchText: Unit = {
+					currentUrnBound() = currentUrn
+					currentPassage() = wholeCorpus.getCtsText(currentUrn)
+					document.getElementById("urnTextInput").value = currentUrn.toString
+		}
+
+		def updateText: Unit = {
+			displayMessage("Fetching text…", false)
+			g.console.log(s"updating text with: ${currentUrn}")
+			val timeStart = new js.Date().getTime()
+			fetchText
+			currentPrevBound() = wholeCorpus.getPrevUrnForCurrent(currentUrnBound())
+			currentNextBound() = wholeCorpus.getNextUrnForCurrent(currentUrnBound())
+			val timeEnd = new js.Date().getTime()
+			displayMessage(s"Fetched text in ${(timeEnd - timeStart)/1000} seconds.",false)
+		}
+
+/*
+		urnTextInput.onchange = (e: dom.Event) => {
 			try {
 				typedUrn = CtsUrn(urnTextInput.value)
 				document.getElementById("validUrnFlag").className = "validUrn"
 				if (typedUrn.passageComponentOption != None){
 					currentUrn = typedUrn
-					currentUrnBound() = currentUrn
-					currentPassage() = wholeCorpus.getCtsText(currentUrn)
-					document.getElementById("urnTextInput").value = currentUrn.toString
 				} else {
 					currentPassage() ="No passage component in URN"
 				}
+				updateText
 			} catch {
 				case e: Exception => document.getElementById("validUrnFlag").className = "invalidUrn"
 			}
 		}
-
-		def updateText: Unit = {
-			displayMessage("Fetching text…", false)
-			val timeStart = new js.Date().getSeconds()
-			fetchText
-			g.console.log(s"New currentUrn = ${currentUrnBound()}")
-			val timeEnd = new js.Date().getSeconds()
-			displayMessage(s"Fetched text in ${timeEnd - timeStart} seconds.",false)
-		}
-
-		urnTextInput.onchange = (e: dom.Event) => {
-			updateText
-		}
+		*/
 
 		urnTextInputSubmitButton.onclick = (_: dom.Event) => {
-			updateText
+			try {
+				typedUrn = CtsUrn(urnTextInput.value)
+				document.getElementById("validUrnFlag").className = "validUrn"
+				if (typedUrn.passageComponentOption != None){
+					currentUrn = typedUrn
+				} else {
+					currentPassage() ="No passage component in URN"
+				}
+				updateText
+			} catch {
+				case e: Exception => document.getElementById("validUrnFlag").className = "invalidUrn"
+			}
 		}
 
 		urnTextInput.onkeyup = (e: dom.Event) => {
@@ -182,32 +202,43 @@ object CtsExample extends {
 			"←"
 		).render
 
-		val moreButton = button(
-			`class`:="navButton",
-			"Show More Text"
-		).render
 
-			val moreButtonVisibility = Rx{
-				if (currentUrnBound() == null){
-					moreButton.setAttribute("class","navButton hide")
+
+		val prevButtonVisibility = Rx{
+				if (currentPrevBound() == None){
+					prevButton.setAttribute("class","navButton hide")
 				} else {
-					moreButton.setAttribute("class","navButton")
+					prevButton.setAttribute("class","navButton")
 				}
 			}
 
+		val nextButtonVisibility = Rx{
+				if (currentNextBound() == None){
+					nextButton.setAttribute("class","navButton hide")
+				} else {
+					nextButton.setAttribute("class","navButton")
+				}
+			}
+
+
+
 		nextButton.onclick = (e: dom.Event) => {
-			g.console.log("get next")
 			val nextUrn = wholeCorpus.corpus.nextUrn(currentUrnBound())
-			g.console.log(s"would get ${nextUrn}")
+			if (nextUrn != None){
+				currentUrn = nextUrn.get
+				updateText
+			}
 		}
 
 		prevButton.onclick = (e: dom.Event) => {
-			g.console.log("get prev")
+			val prevUrn = wholeCorpus.corpus.prevUrn(currentUrnBound())
+			if (prevUrn != None){
+				currentUrn = prevUrn.get
+				updateText
+			}
 		}
 
-		moreButton.onclick = (e: dom.Event) => {
-			g.console.log("get more")
-		}
+
 
 		val currentPassageDisplay = div(
 				`id`:= "currentPassage",
@@ -259,9 +290,6 @@ object CtsExample extends {
 			prevButton
 		).render
 
-		currentPassageDisplay.appendChild(
-			moreButton
-		).render
 
 		currentPassageDisplay.appendChild(
 			nextButton

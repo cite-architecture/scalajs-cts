@@ -15,5 +15,5 @@ libraryDependencies ++= Seq(
   "com.lihaoyi" %%% "scalatags" % "0.6.3",
   "com.lihaoyi" %%% "scalarx" % "0.2.8",
 	"edu.holycross.shot.cite" %%% "xcite" % "2.2.1",
-	"edu.holycross.shot" %%% "ohco2" % "6.5.0"
+	"edu.holycross.shot" %%% "ohco2" % "6.6.0"
 )
