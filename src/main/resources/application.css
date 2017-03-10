@@ -13,6 +13,15 @@
 #citedWorks {
 		font-size: 80%;
 		float: right;
+		width: 500px;
+}
+
+#urnField, #messages {
+	padding: 5px;
+}
+
+#messages {
+	font-size: 80%;
 }
 
 #citedWorks ul {
@@ -24,12 +33,31 @@
 	margin-bottom: 4em;
 }
 
+.navButton {
+	padding: 5px;
+	margin: 3px;
+	border: 1px solid silver;
+	font-size: 80%;
+}
+
+.navButton:hover {
+	background-color: #ddd;
+}
+
+.hide {
+	visibility: hidden;
+}
+
 .red {
 	color: red;
 }
 
 .green {
-	color: green;
+	color: #444;
+}
+
+h1 {
+	font-size: 100%;
 }
 
 /* Inherited Stuff */
@@ -37,7 +65,7 @@
 html,
 body {
 	margin: 0;
-	padding: 0;
+	padding: 25px;
 }
 
 button {
@@ -60,7 +88,7 @@ body {
 	line-height: 1.4em;
 	/* background: #eaeaea url('bg.png'); */
 	color: #4d4d4d;
-	width: 550px;
+	/* width: 550px; */
 	margin: 0 auto;
 	-webkit-font-smoothing: antialiased;
 	-moz-font-smoothing: antialiased;
