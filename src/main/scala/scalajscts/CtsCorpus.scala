@@ -40,6 +40,35 @@ case class CtsCorpus(twocol: String){
 		urn.dropPassage.toString
 	}
 
+ def getNGram: String = {
+	 getNGram(corpus)
+ }
+
+ def getNGram(ngUrn: CtsUrn): String = {
+	 val newCorpus: Corpus = corpus ~~ ngUrn
+	 getNGram(newCorpus)
+ }
+
+  def getNGram(ngCorpus:Corpus): String = {
+			val n: Int = 4
+			val thresh: Int = 8
+			val punc: Boolean = true
+
+
+			val timeStart = new js.Date().getTime()
+
+			println("doing ngram")
+
+			val hist: StringHistogram = ngCorpus.ngramHisto(n, thresh, punc)
+			println(hist)
+			println(hist.size)
+			val strHist: String = hist.toString
+
+			val timeEnd = new js.Date().getTime()
+			println(s"Fetched N-Gram in ${(timeEnd - timeStart)/1000} seconds.")
+			strHist
+	}
+
 
 
 }

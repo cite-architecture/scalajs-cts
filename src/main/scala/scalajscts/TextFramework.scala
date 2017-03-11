@@ -182,7 +182,10 @@ object CtsExample extends {
 		val urnField = (
 			div(
 				`id`:="urnField",
-				"URN: ",
+				label(
+					`for`:= "urnTextInput",
+					"URN"
+				),
 				urnTextInput,
 				urnTextInputSubmitButton,
 				span(
@@ -242,7 +245,6 @@ object CtsExample extends {
 		}
 
 
-
 		val currentPassageDisplay = div(
 				`id`:= "currentPassage",
 				 currentPassageHTML
@@ -254,9 +256,127 @@ object CtsExample extends {
 				 h3(
 					 "Cited Works"
 				 ),
-
 				 citedWorksHTML
 		).render
+
+	val nGramSubmit = input(
+					`id`:="ngramSubmit",
+					`type`:= "Submit",
+					"Get N-Gram"
+		).render
+
+	val nGramScopeSelect = Rx{
+			if (currentUrnBound() == null){
+				select(
+					`id`:= "nGramScopeOption",
+					option( `value`:= "corpus", "Whole Corpus")
+				).render
+			} else {
+				select(
+					`id`:= "nGramScopeOption",
+					option( `value`:= "current", "Current Text" ),
+					option( `value`:= "corpus", "Whole Corpus")
+				).render
+			}
+	}
+
+
+		nGramSubmit.onclick = (_: dom.Event) => {
+
+			// Get All the Variables
+				val n:Int = document.getElementById("nlist").value.toString.toInt
+				val occ:Int = document.getElementById("minOccurrances").value.toString	.toInt
+
+
+			if (wholeCorpus == null){
+				displayMessage("No library loaded.",true)
+			} else {
+				g.console.log("about to do ngram…")
+				document.getElementById("nGramScopeOption").value.toString match {
+					case "current" => {
+						g.console.log("…on current text")
+						//g.console.log(wholeCorpus.getNGram(currentUrn.dropPassage))
+						document.getElementById("nGramSpace").innerHTML = wholeCorpus.getNGram(currentUrn.dropPassage)
+					}
+					case _ => {
+						g.console.log("…on whole corpus")
+						document.getElementById("nGramSpace").innerHTML = wholeCorpus.getNGram
+					}
+				}
+			}
+		}
+
+	 val nGramControls = div(
+		 `id`:="nGramControls",
+		 h3(
+			 "Analytical Tools"
+		 ),
+				label(
+					`for`:= "nlist",
+					"N-Gram"
+				),
+				select(
+					`id`:="nlist",
+					 option( `value`:= "1", "1" ),
+					 option( `value`:= "2", "2" ),
+					 option( `value`:= "3", "3" ),
+					 option( `value`:= "4", "4" ),
+					 option( `value`:= "5", "5" ),
+					 option( `value`:= "6", "6" ),
+					 option( `value`:= "7", "7" ),
+					 option( `value`:= "8", "8" )
+				),
+				label(
+					`for`:="minOccurrances",
+					"Occurs"
+				),
+				select(
+					`id`:="minOccurrances",
+					 option( `value`:= "1", "1" ),
+					 option( `value`:= "2", "2" ),
+					 option( `value`:= "3", "3" ),
+					 option( `value`:= "4", "4" ),
+					 option( `value`:= "5", "5" ),
+					 option( `value`:= "6", "6" ),
+					 option( `value`:= "7", "7" ),
+					 option( `value`:= "8", "8" )
+				),
+				br,
+				nGramScopeSelect,
+				br,
+			  label(
+					`for`:="filterStringField",
+					"Filter String"
+				),
+			 	input(
+					`type`:= "text",
+					`size`:= "20",
+					`id`:= "filterStringField"
+				),
+				br,
+				label(
+					`for`:="ignorePuncBox",
+					"Ignore Punctuation"
+				),
+				input(
+					`type`:="checkbox",
+					`id`:="ignorePuncBox",
+					`checked`:="true"
+				),
+				br,
+				nGramSubmit,
+				br,
+				"(Finding N-Grams on large corpora can take many seconds.)"
+
+
+	 ).render
+
+	 val utilityDiv = div(
+		 `id`:= "utilityFields",
+			nGramControls,
+		  citedWorksDisplay
+	 ).render
+
 
 		filePicker.onchange = (e: dom.Event) => {
 			//file() = filePicker.value
@@ -276,7 +396,7 @@ object CtsExample extends {
 		).render
 
 		textSpace.appendChild(
-			citedWorksDisplay
+			utilityDiv
 		).render
 
 
@@ -306,13 +426,17 @@ object CtsExample extends {
 		*/
 
 		// On initialization, go ahead and load via AJAX the default library
+		// …how does one check for failure?
 
+/*
 		displayMessage("Loading remote library…",false)
-		Ajax.get(defaultLibraryUrl).onSuccess { case xhr =>
-			wholeCorpus = CtsCorpus(xhr.responseText)
-			citedWorks() = wholeCorpus.getCitedWorksStr
-			clearMessage
+		val remoteCall = Ajax.get(defaultLibraryUrl).onSuccess { case xhr =>
+				wholeCorpus = CtsCorpus(xhr.responseText)
+				citedWorks() = wholeCorpus.getCitedWorksStr
+				clearMessage
 		}
+		*/
+
 
 
 	}

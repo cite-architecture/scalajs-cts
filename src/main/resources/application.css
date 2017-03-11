@@ -10,10 +10,19 @@
 		color: green;
 }
 
-#citedWorks {
+#utilityFields {
 		font-size: 80%;
 		float: right;
 		width: 500px;
+		background-color: #fff;
+		padding: 15px;
+		min-height: 200px;
+}
+
+label {
+	padding-right: 2px;
+	padding-left: 4px;
+	color: #333;
 }
 
 #urnField, #messages {
@@ -29,9 +38,8 @@
 }
 
 #currentPassage {
-	margin-top: 4em;
-	margin-bottom: 4em;
-	max-width: 600px;
+	max-width: 650px;
+	padding: 25px;
 }
 
 input[type=submit]:active {
