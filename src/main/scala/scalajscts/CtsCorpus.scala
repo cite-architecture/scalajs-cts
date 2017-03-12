@@ -63,5 +63,21 @@ case class CtsCorpus(twocol: String){
 	}
 
 
+ def getUrnsForNGram(s: String, ignorePunc: Boolean ): Vector[CtsUrn] ={
+	 val vurn = corpus.urnsForNGram(s, 1, ignorePunc)
+	 vurn
+ }
+
+ def getUrnsForNGram(ngUrn: CtsUrn, s: String, ignorePunc: Boolean ): Vector[CtsUrn] ={
+	 val newCorpus: Corpus = corpus ~~ ngUrn
+	 val vurn = newCorpus.urnsForNGram(s, 1, ignorePunc)
+	 vurn
+ }
+
+ def getUrnsForNGram(ngCorpus: Corpus, s: String, ignorePunc: Boolean ): Vector[CtsUrn] = {
+	 	val vurn = ngCorpus.urnsForNGram(s, 1, ignorePunc)
+		vurn
+ }
+
 
 }

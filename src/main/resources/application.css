@@ -46,7 +46,7 @@ label {
 	list-style-type: decimal;
 }
 
-#currentPassage, #nGramSpace {
+#currentPassage, #nGramSpace, #nGramUrnResults {
 	max-width: 650px;
 	padding: 25px;
 }
@@ -55,7 +55,17 @@ label {
 	padding-bottom: 0px;
 }
 
-#nGramSpace {
+#nGramSpace, #nGramUrnResults {
+	padding-top: 0px;
+	padding-bottom: 0px;
+	max-width: 100%;
+}
+
+.ngramurn {
+	display: inline-block;
+}
+
+#nGramUrnResults {
 	padding-top: 0px;
 }
 

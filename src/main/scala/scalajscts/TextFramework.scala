@@ -267,6 +267,67 @@ object CtsExample extends {
 		val nGramResultsBound = Var(nGramResults)
 		val nGramQuery = Var("")
 
+		var nGramUrns: Vector[CtsUrn] = null
+		val nGramUrnsBound = Var(nGramUrns)
+		val nGramUrnQuery = Var("")
+
+		val nGramUrnsHTML = Rx{
+			div(
+				`id`:="nGramUrnsDiv",
+				p(
+					if (nGramUrnsBound() != null){
+						//nGramResultsBound().toString
+						nGramUrnsBound().map( ngu => {
+							val thisSpan = span(
+								`class`:="ngramurn",
+								span(
+									`class`:="ngramString",
+									ngu.toString
+								)
+							).render
+							thisSpan.onclick = (_: dom.Event) => {
+								g.console.log(s"Would get passage for ${ngu}")
+							}
+							thisSpan
+						}
+					)
+				} else {
+					""
+				}
+			)
+		)
+		}
+
+		def getUrnsForNGram(s: String): Vector[CtsUrn] = {
+				var corpusOrUrn:String = ""
+				val ignorePuncString: String = document.getElementById("ignorePuncBox").checked.toString
+				val ignorePunc: Boolean = (ignorePuncString == "true")
+				var vurn: Vector[CtsUrn] = null
+				val timeStart = new js.Date().getTime()
+
+				if (wholeCorpus == null){
+					displayMessage("No library loaded.",true)
+				} else {
+					document.getElementById("nGramScopeOption").value.toString match {
+						case "current" => {
+							corpusOrUrn = s"${currentUrn.dropPassage}"
+							// get nGrams for this URN
+							vurn = wholeCorpus.getUrnsForNGram(currentUrnBound().dropPassage,s,ignorePunc)
+						}
+						case _ => {
+							corpusOrUrn = "whole corpus"
+							// getnGrams for whole corpus
+							vurn = wholeCorpus.getUrnsForNGram(s,ignorePunc)
+						}
+					}
+				}
+				val timeEnd = new js.Date().getTime()
+				val outString = s
+				g.console.log(s"Would get urns for ${outString}")
+				nGramUrnQuery() = s"Found ${vurn.size} urns for the n-gram '${s}' in ${(timeEnd - timeStart) / 1000} seconds. Queried on ${corpusOrUrn}."
+				vurn
+		}
+
 		val nGramResultsHTML = Rx{
 			div(
 				`id`:="nGramsDiv",
@@ -282,7 +343,7 @@ object CtsExample extends {
 							)
 						).render
 						thisSpan.onclick = (_: dom.Event) => {
-							g.console.log(s"Would get urns for ${ng.s}")
+							nGramUrnsBound() = getUrnsForNGram(ng.s)
 						}
 						thisSpan
 					}
@@ -304,6 +365,25 @@ object CtsExample extends {
 			if( nGramResultsBound() != null) { "N-Grams"}
 		).render
 	}
+
+	val nGramUrnQueryP = Rx{
+		p(
+      s"${nGramUrnQuery()}"
+		).render
+	}
+
+	val nGramUrnsHeader = Rx{
+		h3(
+			if( nGramUrnsBound() != null) { "URNs for N-Gram"}
+		).render
+	}
+
+	val nGramUrnResultsDisplay = div(
+			`id`:="nGramUrnResults",
+			nGramUrnsHeader,
+			nGramUrnQueryP,
+			nGramUrnsHTML
+	).render
 
 
 		val nGramResultsDisplay = div(
@@ -337,6 +417,7 @@ object CtsExample extends {
 	}
 
 
+
 	nGramSubmit.onclick = (_: dom.Event) => {
 
 		// Get All the Variables
@@ -367,7 +448,7 @@ object CtsExample extends {
 			}
 		}
 		val timeEnd = new js.Date().getTime()
-		nGramQuery() = s"Found ${nGramResultsBound().size} N-Grams: n = ${n}; threshold = ${occ}; ignore-punctuation = ${ignorePunc}; filtered-by = '${filterString}'; queried on ${corpusOrUrn}"
+		nGramQuery() = s"Found ${nGramResultsBound().size} N-Grams: n = ${n} in ${(timeEnd - timeStart)/1000} seconds; threshold = ${occ}; ignore-punctuation = ${ignorePunc}; filtered-by = '${filterString}'; queried on  ${corpusOrUrn}"
 		displayMessage(s"Fetched N-Gram in ${(timeEnd - timeStart)/1000} seconds.",false)
 	}
 
@@ -463,6 +544,11 @@ object CtsExample extends {
 				wholeCorpus = CtsCorpus(contents)
 				citedWorks() = wholeCorpus.getCitedWorksStr
 				clearMessage
+				// clear all nGram stuff!
+				nGramResultsBound() = null
+				nGramQuery() = ""
+				nGramUrnsBound() = null
+				nGramUrnQuery() = ""
 			}
 		}
 
@@ -488,6 +574,10 @@ object CtsExample extends {
 
 		textSpace.appendChild(
 			nGramResultsDisplay
+		).render
+
+		textSpace.appendChild(
+			nGramUrnResultsDisplay
 		).render
 
 		currentPassageDisplay.appendChild(
