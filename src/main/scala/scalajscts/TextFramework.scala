@@ -371,6 +371,26 @@ object CtsExample extends {
 		displayMessage(s"Fetched N-Gram in ${(timeEnd - timeStart)/1000} seconds.",false)
 	}
 
+	val minOccField = input(
+					`id`:="minOccurrances",
+					`type`:="text",
+					`size`:="4",
+					`value`:="4"
+	).render
+
+	minOccField.onchange= (e: dom.Event) => {
+			try{
+					val mo: Int = minOccField.value.toString.toInt
+			} catch {
+					case e: Exception => {
+						val badMo: String = minOccField.value.toString
+						displayMessage(s"Minimum Occurrances value must be an integer. ${badMo} is not an integer.", true)
+						minOccField.value = "3"
+					}
+			}
+
+	}
+
 	 val nGramControls = div(
 		 `id`:="nGramControls",
 		 h3(
@@ -395,17 +415,7 @@ object CtsExample extends {
 					`for`:="minOccurrances",
 					"Occurs"
 				),
-				select(
-					`id`:="minOccurrances",
-					 option( `value`:= "1", "1" ),
-					 option( `value`:= "2", "2" ),
-					 option( `value`:= "3", "3" ),
-					 option( `value`:= "4", "4" ),
-					 option( `value`:= "5", "5" ),
-					 option( `value`:= "6", "6" ),
-					 option( `value`:= "7", "7" ),
-					 option( `value`:= "8", "8" )
-				),
+				minOccField,
 				br,
 				nGramScopeSelect,
 				br,
