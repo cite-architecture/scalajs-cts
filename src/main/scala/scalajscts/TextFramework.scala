@@ -367,7 +367,7 @@ object CtsExample extends {
 			}
 		}
 		val timeEnd = new js.Date().getTime()
-		nGramQuery() = s"N = ${n}; threshold = ${occ}; ignore-punctuation = ${ignorePunc}; filtered-by = '${filterString}'; queried on ${corpusOrUrn}"
+		nGramQuery() = s"Found ${nGramResultsBound().size} N-Grams: n = ${n}; threshold = ${occ}; ignore-punctuation = ${ignorePunc}; filtered-by = '${filterString}'; queried on ${corpusOrUrn}"
 		displayMessage(s"Fetched N-Gram in ${(timeEnd - timeStart)/1000} seconds.",false)
 	}
 
@@ -499,14 +499,12 @@ object CtsExample extends {
 		// On initialization, go ahead and load via AJAX the default library
 		// …how does one check for failure?
 
-/*
 		displayMessage("Loading remote library…",false)
 		val remoteCall = Ajax.get(defaultLibraryUrl).onSuccess { case xhr =>
 				wholeCorpus = CtsCorpus(xhr.responseText)
 				citedWorks() = wholeCorpus.getCitedWorksStr
 				clearMessage
 		}
-		*/
 
 
 
