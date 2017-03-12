@@ -287,6 +287,14 @@ object CtsExample extends {
 							).render
 							thisSpan.onclick = (_: dom.Event) => {
 								g.console.log(s"Would get passage for ${ngu}")
+								try{
+									currentUrn = ngu
+									updateText
+								} catch {
+									case e: Exception => {
+											displayMessage(s"Could not turn ${ngu} into a CTS URN.",true)
+									}
+								}
 							}
 							thisSpan
 						}
@@ -323,7 +331,6 @@ object CtsExample extends {
 				}
 				val timeEnd = new js.Date().getTime()
 				val outString = s
-				g.console.log(s"Would get urns for ${outString}")
 				nGramUrnQuery() = s"Found ${vurn.size} urns for the n-gram '${s}' in ${(timeEnd - timeStart) / 1000} seconds. Queried on ${corpusOrUrn}."
 				vurn
 		}
