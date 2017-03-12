@@ -40,33 +40,26 @@ case class CtsCorpus(twocol: String){
 		urn.dropPassage.toString
 	}
 
- def getNGram: String = {
-	 getNGram(corpus)
+ def getNGram(filterString: String, n: Int, occ: Int, ignorePunc: Boolean ): StringHistogram = {
+		 getNGram(corpus, filterString, n, occ, ignorePunc)
  }
 
- def getNGram(ngUrn: CtsUrn): String = {
+ def getNGram(ngUrn: CtsUrn, filterString: String, n: Int, occ: Int, ignorePunc: Boolean): StringHistogram = {
 	 val newCorpus: Corpus = corpus ~~ ngUrn
-	 getNGram(newCorpus)
+	 getNGram(newCorpus, filterString, n, occ, ignorePunc)
  }
 
-  def getNGram(ngCorpus:Corpus): String = {
-			val n: Int = 4
-			val thresh: Int = 8
-			val punc: Boolean = true
+  def getNGram(ngCorpus:Corpus, filterString: String, n: Int, occ: Int, ignorePunc: Boolean ): StringHistogram = {
 
+		var hist: StringHistogram = null
 
-			val timeStart = new js.Date().getTime()
+		if( filterString == ""){
+			hist = ngCorpus.ngramHisto(n, occ, ignorePunc)
+		} else {
+			hist = ngCorpus.ngramHisto(filterString, n, occ , ignorePunc)
+		}
 
-			println("doing ngram")
-
-			val hist: StringHistogram = ngCorpus.ngramHisto(n, thresh, punc)
-			println(hist)
-			println(hist.size)
-			val strHist: String = hist.toString
-
-			val timeEnd = new js.Date().getTime()
-			println(s"Fetched N-Gram in ${(timeEnd - timeStart)/1000} seconds.")
-			strHist
+		hist
 	}
 
 

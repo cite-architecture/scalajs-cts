@@ -29,6 +29,15 @@ label {
 	padding: 5px;
 }
 
+.ngramString {
+		margin-right: 1em;
+		color: #7273af;
+}
+
+.ngramString:hover {
+		text-decoration: underline;
+}
+
 #messages {
 	font-size: 80%;
 }
@@ -37,9 +46,17 @@ label {
 	list-style-type: decimal;
 }
 
-#currentPassage {
+#currentPassage, #nGramSpace {
 	max-width: 650px;
 	padding: 25px;
+}
+
+#currentPassage {
+	padding-bottom: 0px;
+}
+
+#nGramSpace {
+	padding-top: 0px;
 }
 
 input[type=submit]:active {

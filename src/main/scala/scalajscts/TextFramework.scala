@@ -129,7 +129,6 @@ object CtsExample extends {
 
 		def updateText: Unit = {
 			displayMessage("Fetching text…", false)
-			g.console.log(s"updating text with: ${currentUrn}")
 			val timeStart = new js.Date().getTime()
 			fetchText
 			currentPrevBound() = wholeCorpus.getPrevUrnForCurrent(currentUrnBound())
@@ -247,6 +246,9 @@ object CtsExample extends {
 
 		val currentPassageDisplay = div(
 				`id`:= "currentPassage",
+				h3(
+					"Text"
+				),
 				 currentPassageHTML
 		).render
 
@@ -258,6 +260,60 @@ object CtsExample extends {
 				 ),
 				 citedWorksHTML
 		).render
+
+
+		// NGram Stuff
+		var nGramResults: StringHistogram = null
+		val nGramResultsBound = Var(nGramResults)
+		val nGramQuery = Var("")
+
+		val nGramResultsHTML = Rx{
+			div(
+				`id`:="nGramsDiv",
+				if (nGramResultsBound() != null){
+					//nGramResultsBound().toString
+					nGramResultsBound().histogram.map( ng => {
+						val thisSpan = span(
+							`class`:="ngram",
+							s"(${ng.count}) ",
+							span(
+								`class`:="ngramString",
+								ng.s
+							)
+						).render
+						thisSpan.onclick = (_: dom.Event) => {
+							g.console.log(s"Would get urns for ${ng.s}")
+						}
+						thisSpan
+					}
+				)
+			} else {
+				""
+			}
+		)
+	}
+
+	val nGramQueryP = Rx{
+		p(
+				nGramQuery()
+		).render
+	}
+
+	val nGramHeader = Rx{
+		h3(
+			if( nGramResultsBound() != null) { "N-Grams"}
+		).render
+	}
+
+
+		val nGramResultsDisplay = div(
+			`id`:="nGramSpace",
+			nGramHeader,
+			nGramQueryP,
+			nGramResultsHTML
+		).render
+
+
 
 	val nGramSubmit = input(
 					`id`:="ngramSubmit",
@@ -281,30 +337,39 @@ object CtsExample extends {
 	}
 
 
-		nGramSubmit.onclick = (_: dom.Event) => {
+	nGramSubmit.onclick = (_: dom.Event) => {
 
-			// Get All the Variables
-				val n:Int = document.getElementById("nlist").value.toString.toInt
-				val occ:Int = document.getElementById("minOccurrances").value.toString	.toInt
+		// Get All the Variables
+		val n:Int = document.getElementById("nlist").value.toString.toInt
+		val occ:Int = document.getElementById("minOccurrances").value.toString.toInt
+		val ignorePuncString: String = document.getElementById("ignorePuncBox").checked.toString
+		val ignorePunc: Boolean = (ignorePuncString == "true")
+		val filterString: String = document.getElementById("filterStringField").value.toString
 
+		var corpusOrUrn:String = ""
 
-			if (wholeCorpus == null){
-				displayMessage("No library loaded.",true)
-			} else {
-				g.console.log("about to do ngram…")
-				document.getElementById("nGramScopeOption").value.toString match {
-					case "current" => {
-						g.console.log("…on current text")
-						//g.console.log(wholeCorpus.getNGram(currentUrn.dropPassage))
-						document.getElementById("nGramSpace").innerHTML = wholeCorpus.getNGram(currentUrn.dropPassage)
-					}
-					case _ => {
-						g.console.log("…on whole corpus")
-						document.getElementById("nGramSpace").innerHTML = wholeCorpus.getNGram
-					}
+		displayMessage("Getting N-Gram. Please be patient…",false)
+		val timeStart = new js.Date().getTime()
+
+		if (wholeCorpus == null){
+			displayMessage("No library loaded.",true)
+		} else {
+			document.getElementById("nGramScopeOption").value.toString match {
+				case "current" => {
+					corpusOrUrn = s"${currentUrn.dropPassage}"
+					//g.console.log(wholeCorpus.getNGram(currentUrn.dropPassage))
+				 nGramResultsBound() = wholeCorpus.getNGram(currentUrn.dropPassage, filterString, n, occ, ignorePunc)
+				}
+				case _ => {
+					corpusOrUrn = "whole corpus"
+					nGramResultsBound() = wholeCorpus.getNGram(filterString, n, occ, ignorePunc)
 				}
 			}
 		}
+		val timeEnd = new js.Date().getTime()
+		nGramQuery() = s"N = ${n}; threshold = ${occ}; ignore-punctuation = ${ignorePunc}; filtered-by = '${filterString}'; queried on ${corpusOrUrn}"
+		displayMessage(s"Fetched N-Gram in ${(timeEnd - timeStart)/1000} seconds.",false)
+	}
 
 	 val nGramControls = div(
 		 `id`:="nGramControls",
@@ -391,6 +456,8 @@ object CtsExample extends {
 			}
 		}
 
+
+
 		textSpace.appendChild(
 			urnField
 		).render
@@ -407,6 +474,10 @@ object CtsExample extends {
 
 		textSpace.appendChild(
 				currentPassageDisplay
+		).render
+
+		textSpace.appendChild(
+			nGramResultsDisplay
 		).render
 
 		currentPassageDisplay.appendChild(
