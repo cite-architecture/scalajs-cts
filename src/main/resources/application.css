@@ -61,8 +61,14 @@ label {
 	max-width: 100%;
 }
 
+#nGramUrnsDiv ol {
+	list-style-type: decimal;
+}
+
 .ngramurn {
-	display: inline-block;
+	float: left;
+	margin-right: 1em;
+	min-width: 25em;
 }
 
 #nGramUrnResults {

@@ -274,11 +274,11 @@ object CtsExample extends {
 		val nGramUrnsHTML = Rx{
 			div(
 				`id`:="nGramUrnsDiv",
-				p(
+				ol(
 					if (nGramUrnsBound() != null){
 						//nGramResultsBound().toString
 						nGramUrnsBound().map( ngu => {
-							val thisSpan = span(
+							val thisSpan = li(
 								`class`:="ngramurn",
 								span(
 									`class`:="ngramString",
