@@ -63,13 +63,21 @@ label {
 
 #nGramUrnsDiv ol {
 	list-style-type: decimal;
+	-moz-column-count: 2;
+-moz-column-gap: 60px;
+-webkit-column-count: 2;
+-webkit-column-gap: 60px;
+column-count: 2;
+column-gap: 30px;
 }
 
+/*
 .ngramurn {
 	float: left;
 	margin-right: 1em;
 	min-width: 25em;
 }
+*/
 
 #nGramUrnResults {
 	padding-top: 0px;

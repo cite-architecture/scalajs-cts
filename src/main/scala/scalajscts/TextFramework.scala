@@ -137,23 +137,6 @@ object CtsExample extends {
 			displayMessage(s"Fetched text in ${(timeEnd - timeStart)/1000} seconds.",false)
 		}
 
-/*
-		urnTextInput.onchange = (e: dom.Event) => {
-			try {
-				typedUrn = CtsUrn(urnTextInput.value)
-				document.getElementById("validUrnFlag").className = "validUrn"
-				if (typedUrn.passageComponentOption != None){
-					currentUrn = typedUrn
-				} else {
-					currentPassage() ="No passage component in URN"
-				}
-				updateText
-			} catch {
-				case e: Exception => document.getElementById("validUrnFlag").className = "invalidUrn"
-			}
-		}
-		*/
-
 		urnTextInputSubmitButton.onclick = (_: dom.Event) => {
 			try {
 				typedUrn = CtsUrn(urnTextInput.value)
